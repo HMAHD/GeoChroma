@@ -1,0 +1,9 @@
+/* Default color for districts with value 0 */
+.district-default {
+  fill: #000000;
+}
+
+/* Color for districts with value greater than 0 */
+.district-colorful {
+  fill: #ffff00; /* Yellow color */
+}
