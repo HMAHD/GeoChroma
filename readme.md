@@ -53,7 +53,7 @@ To run this project, you need the following prerequisites:
 1. Clone the project repository to your local machine:
 
 ```bash
-git clone https://github.com/your-username/sri-lanka-districts-map.git
+git clone https://github.com/HMAHD/GeoChroma.git
 ```
 
 ### Database Setup ⚙️
