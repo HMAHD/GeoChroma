@@ -6,8 +6,11 @@
 [![cover-image](https://i.ibb.co/sWYGYLP/interactive-SVG-map-of-Sri-Lanka-s-districts-2.png)](#)
 
 </div>
-<p align="center"> 
-<img src="https://i.ibb.co/pjyzJ1p/Geo-Chroma.png"></img>
+<b>Screenshot</b> 
+<div align="center">
+  
+[![Screen-shot](https://i.ibb.co/pjyzJ1p/Geo-Chroma.png)](#)
+</div>
 </p>
 <br/>
 
