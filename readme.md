@@ -6,6 +6,9 @@
 [![cover-image](https://i.ibb.co/sWYGYLP/interactive-SVG-map-of-Sri-Lanka-s-districts-2.png)](#)
 
 </div>
+<p align="center"> 
+<img src="https://i.ibb.co/pjyzJ1p/Geo-Chroma.png"></img>
+</p>
 <br/>
 
 This project aims to create an interactive SVG map of Sri Lanka's districts and dynamically color each district based on its corresponding value from a MySQL database. The map will be hosted on a shared hosting platform, and the colors of the districts will be updated periodically based on the data retrieved from the database.
@@ -115,6 +118,7 @@ The project directory contains the following files:
 - `script.js`: JavaScript code responsible for fetching data, updating map colors, and periodic data updates.
 - `lkmap.svg`: SVG map file containing the outlines of Sri Lanka's districts.
 - `get_districts.php`: PHP script for fetching data from the MySQL database.
+- `update_data.php` : Update data in the database. In a single line, it performs the task of updating records in the database based on the input provided. 
 
 ## Contributing 🫂
 
