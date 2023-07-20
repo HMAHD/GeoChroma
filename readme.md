@@ -3,7 +3,7 @@
 <br/>
 <div align="center">
 
-[![cover-image](https://i.ibb.co/wwrDbxg/interactive-SVG-map-of-Sri-Lanka-s-districts.png)](#)
+[![cover-image](https://i.ibb.co/sWYGYLP/interactive-SVG-map-of-Sri-Lanka-s-districts-2.png)](#)
 
 </div>
 <br/>

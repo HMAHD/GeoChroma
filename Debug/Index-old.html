@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sri Lanka Districts Map</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <!-- Add Bootstrap CSS file -->
+    <link rel="stylesheet" href="./css/styles.css" />
+    <!-- Add the CSS file -->
+    <style>
+      /* Add animated and colorful border to the map container */
+      #map-container {
+        margin: 20px auto;
+        max-width: 1000px;
+        padding: 10px;
+        animation: borderAnimation 5s infinite alternate;
+      }
+
+      @keyframes borderAnimation {
+        from {
+          border-color: #ff0000;
+        }
+        to {
+          border-color: #00ff00;
+        }
+      }
+
+      /* Floating Button Styles */
+      .floating-button {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        z-index: 9999;
+      }
+
+      .floating-button:hover {
+        background-color: #0056b3;
+      }
+
+      /* Header Navigation Styles */
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 10px;
+      }
+
+      nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+      }
+
+      nav ul li {
+        margin: 0 10px;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        padding: 5px 10px;
+      }
+
+      nav ul li a:hover {
+        background-color: #555;
+      }
+
+      /* Bootstrap table styles */
+      #data-table {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="update_data.php">Update Data</a></li>
+          <!-- Add more navigation links as needed -->
+        </ul>
+      </nav>
+    </header>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-9">
+          <div id="map-container">
+            <object
+              id="map"
+              type="image/svg+xml"
+              data="./svg/lkmap.svg"
+            ></object>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Table body rows will be dynamically populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- Add jQuery (required for Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <!-- Add Popper.js (required for Bootstrap) -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Add Bootstrap JS file -->
+
+    <script src="./script.js"></script>
+    <!-- Include your updated script.js file -->
+
+    <!-- Floating Button -->
+    <div class="floating-button" onclick="scrollToTop()">&uarr;</div>
+
+    <script>
+      // Function to scroll to the top of the page when the floating button is clicked
+      function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // Function to fetch data from the database
+      function fetchData() {
+        // Replace 'your_php_script_url' with the actual URL of your 'get_districts.php' script
+        fetch("./get_districts.php") // Use the correct path to the script if it's in a different directory
+          .then((response) => response.json())
+          .then((data) => {
+            // Log the data to the console to verify if it's correct
+            console.log(data);
+            // Data retrieval successful, now let's update the map colors
+            updateMapColors(data);
+            // Populate the Bootstrap table with data
+            populateTable(data);
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+          });
+      }
+
+      // Function to update the colors of the map districts
+      function updateMapColors(data) {
+        // Get the SVG document within the object tag
+        const mapObject = document.getElementById("map");
+        const svgDoc = mapObject.contentDocument;
+
+        // Define colors for the districts based on their values
+        // If you want to change color according to value, change here
+        const colors = [
+          { value: 0, color: "#141414" }, // Default color for districts with value 0
+          { value: 1, color: "#ffea00" }, // Yellow color for districts with value greater than 0
+        ];
+        // Define the color for districts with value greater than 0 (yellow color)
+        const yellowColor = "#ffea00";
+
+        // Generate color entries for values 1 to 999 with the yellow color
+        for (let value = 1; value <= 999; value++) {
+          colors.push({ value, color: yellowColor });
+        }
+
+        // Loop through each district in the data
+        data.forEach((district) => {
+          // Find the district shape in the SVG using its ID (assuming the district ID and SVG ID match)
+          let districtShape = svgDoc.getElementById(district.id);
+
+          // If the district shape is not found by ID, try finding it by name
+          if (!districtShape) {
+            const districtName = district.name
+              .toLowerCase()
+              .replace(/\s/g, "-");
+            districtShape = svgDoc.getElementById(districtName);
+          }
+
+          if (districtShape) {
+            // Find the color based on the district's value
+            const colorObj = colors.find(
+              (colorData) => colorData.value === parseInt(district.value)
+            );
+            const color = colorObj ? colorObj.color : colors[0].color; // Default to the first color if not found
+
+            // Apply the color to the district
+            districtShape.style.fill = color;
+          }
+        });
+      }
+
+      // Function to populate the Bootstrap table with data
+      function populateTable(data) {
+        const tableBody = document.querySelector("#data-table tbody");
+        tableBody.innerHTML = "";
+
+        // Loop through each district in the data and create table rows
+        data.forEach((district) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td>${district.name}</td>
+          <td>${district.value}</td>
+        `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      // Fetch data and update map colors initially
+      fetchData();
+
+      // Set up an interval to update the data every 1 minute (or as required)
+      // Remove this interval if you don't need periodic updates
+      setInterval(fetchData, 60000); // 1 minute interval (60000 milliseconds)
+    </script>
+  </body>
+</html>

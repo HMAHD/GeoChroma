@@ -4,14 +4,257 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sri Lanka Districts Map</title>
+    <!-- Add Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
     <link rel="stylesheet" href="./css/styles.css" />
-    <!-- Add the CSS file -->
+    <style>
+      /* ... Existing styles ... */
+
+      /* Add a container for the map and table */
+      .map-table-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+
+      /* Modify the map size and alignment here */
+      #map-container {
+        width: 100%; /* Set the desired width for the map */
+        max-width: 600px; /* Limit the map's max-width for better responsiveness */
+        height: 500px; /* Set the desired height for the map */
+        margin: 20px 10px; /* Add some margin to the left side */
+        padding: 10px;
+        animation: borderAnimation 1s infinite alternate;
+        border: 3px solid;
+        border-image: linear-gradient(45deg, #ff0000, #00ff00);
+        border-image-slice: 1;
+      }
+
+      /* Add a container for the table and align it to the right */
+      #table-container {
+        width: 100%; /* Set the desired width for the table */
+        max-width: 400px; /* Limit the table's max-width for better responsiveness */
+        margin: 20px 10px; /* Add some margin to the right side */
+      }
+
+      /* ... Existing styles ... */
+    </style>
   </head>
 
   <body>
-    <object id="map" type="image/svg+xml" data="./svg/lkmap.svg"></object>
+    <header>
+    <nav>
+      <ul>
+        <li class="logo"><img src="./Assets/GeoChroma.png" alt="Logo"></li>
+        <li><a href="./update_data.php">Update Data</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+        <!-- Add more navigation links as needed -->
+    </nav>
+  </header>
+  </body>
+  
 
+    <div class="container">
+      <div class="map-table-container">
+        <!-- Map container aligned to the left -->
+        <div id="map-container">
+          <object
+            id="map"
+            type="image/svg+xml"
+            data="./svg/lkmap.svg"
+            width="100%"
+            height="100%"
+          ></object>
+        </div>
+
+        <!-- Table container aligned to the right -->
+        <div id="table-container">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Table body rows will be dynamically populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tooltip element -->
+    <div id="tooltip" class="hidden"></div>
     <script src="./script.js"></script>
-    <!-- Include your updated script.js file -->
+    <!-- Other scripts and floating button -->
+
+    <!-- Floating Button -->
+    <div class="floating-button" onclick="scrollToTop()">&uarr;</div>
+
+    <script>
+      // Function to scroll to the top of the page when the floating button is clicked
+      function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // Function to fetch data from the database
+      function fetchData() {
+        // Replace 'your_php_script_url' with the actual URL of your 'get_districts.php' script
+        fetch("./get_districts.php") // Use the correct path to the script if it's in a different directory
+          .then((response) => response.json())
+          .then((data) => {
+            // Log the data to the console to verify if it's correct
+            console.log(data);
+            // Data retrieval successful, now let's update the map colors
+            updateMapColors(data);
+            // Populate the Bootstrap table with data
+            populateTable(data);
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+          });
+      }
+
+      // Function to update the colors of the map districts
+      function updateMapColors(data) {
+        // Get the SVG document within the object tag
+        const mapObject = document.getElementById("map");
+        const svgDoc = mapObject.contentDocument;
+
+        // Define colors for the districts based on their values
+        // If you want to change color according to value, change here
+        const colors = [
+          { value: 0, color: "#141414" }, // Default color for districts with value 0
+          { value: 1, color: "#ffea00" }, // Yellow
+          { value: 2, color: "#fff3a7" }, // Orange
+          { value: 3, color: "#ffd800" }, // Darker Orange
+          { value: 4, color: "#ffdb00" }, // Orange Red
+          { value: 5, color: "#ffe094" }, // Reddish Orange
+          { value: 6, color: "#d1ea00" }, // Dark Orange
+          { value: 7, color: "#ff9f00" }, // Deep Orange
+          { value: 8, color: "#ffefb3" }, // Strong Orange
+
+          { value: 9, color: "#fff05b" }, // Default color for districts with value 0
+          { value: 10, color: "#ffc94b" }, // Yellow
+          { value: 11, color: "#ffbf00" }, // Orange
+          { value: 12, color: "#ffcd55" }, // Darker Orange
+          { value: 13, color: "#ffcc66" }, // Orange Red
+          { value: 14, color: "#ffcf33" }, // Reddish Orange
+          { value: 15, color: "#ffd445" }, // Dark Orange
+          { value: 16, color: "#ffd000" }, // Deep Orange
+          { value: 17, color: "#ffce71" }, // Strong Orange
+
+          { value: 18, color: "#ffd266" }, // Default color for districts with value 0
+          { value: 19, color: "#ffca66" }, // Yellow
+          { value: 20, color: "#ffaf00" }, // Orange
+          { value: 21, color: "#ffae00" }, // Darker Orange
+          { value: 22, color: "#ffaa00" }, // Orange Red
+          { value: 23, color: "#ffa800" }, // Reddish Orange
+          { value: 24, color: "#ffa600" }, // Dark Orange
+          { value: 25, color: "#ffa300" }, // Deep Orange
+          { value: 26, color: "#ffa200" }, // Strong Orange
+
+          { value: 27, color: "#ff9e00" }, // Default color for districts with value 0
+          { value: 28, color: "#ff9b00" }, // Yellow
+          { value: 29, color: "#ff9900" }, // Orange
+          { value: 30, color: "#ff9800" }, // Darker Orange
+          { value: 31, color: "#ff9600" }, // Orange Red
+          { value: 32, color: "#ff9300" }, // Reddish Orange
+          { value: 33, color: "#ff9200" }, // Dark Orange
+          { value: 34, color: "#ff8f00" }, // Deep Orange
+          { value: 35, color: "#ff8d00" }, // Strong Orange
+
+          { value: 36, color: "#ff8a00" }, // Default color for districts with value 0
+          { value: 37, color: "#ff8800" }, // Yellow
+          { value: 38, color: "#ff8500" }, // Orange
+          { value: 39, color: "#ff7d00" }, // Darker Orange
+          { value: 40, color: "#ff7a00" }, // Orange Red
+          { value: 41, color: "#ff7800" }, // Reddish Orange
+          { value: 42, color: "#ff7500" }, // Dark Orange
+          { value: 43, color: "#ff7200" }, // Deep Orange
+          { value: 44, color: "#ff7000" }, // Strong Orange
+
+          { value: 45, color: "#ff6d00" }, // Default color for districts with value 0
+          { value: 46, color: "#ff6a00" }, // Yellow
+          { value: 47, color: "#ff6800" }, // Orange
+          { value: 48, color: "#ff6500" }, // Darker Orange
+          { value: 49, color: "#ff6a00" }, // Orange Red
+          { value: 50, color: "#ff4f00" }, // Reddish Orange
+        ];
+        // Define the color for districts with value greater than 0 (yellow color)
+        const yellowColor = "#ffea00";
+
+        // Generate color entries for values 1 to 999 with the yellow color
+        for (let value = 50; value <= 999; value++) {
+          colors.push({ value, color: yellowColor });
+        }
+
+        // Loop through each district in the data
+        data.forEach((district) => {
+          // Find the district shape in the SVG using its ID (assuming the district ID and SVG ID match)
+          let districtShape = svgDoc.getElementById(district.id);
+
+          // If the district shape is not found by ID, try finding it by name
+          if (!districtShape) {
+            const districtName = district.name
+              .toLowerCase()
+              .replace(/\s/g, "-");
+            districtShape = svgDoc.getElementById(districtName);
+          }
+
+          if (districtShape) {
+            // Find the color based on the district's value
+            const colorObj = colors.find(
+              (colorData) => colorData.value === parseInt(district.value)
+            );
+            const color = colorObj ? colorObj.color : colors[0].color; // Default to the first color if not found
+
+            // Apply the color to the district
+            districtShape.style.fill = color;
+          }
+        });
+      }
+
+      // Function to populate the Bootstrap table with data
+      function populateTable(data) {
+        const tableBody = document.querySelector("#data-table tbody");
+        tableBody.innerHTML = "";
+
+        // Loop through each district in the data and create table rows
+        data.forEach((district) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td>${district.name}</td>
+          <td>${district.value}</td>
+        `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      // Fetch data and update map colors initially
+      fetchData();
+
+      // Set up an interval to update the data every 1 minute (or as required)
+      // Remove this interval if you don't need periodic updates
+      setInterval(fetchData, 60000); // 1 minute interval (60000 milliseconds)
+    </script>
+
+    <!-- Add Bootstrap JS (required for dropdown functionality) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Add additional custom scripts if needed -->
+
+    <footer>
+      <!-- Footer content (if any) -->
+      Designed & Developed By Akash Hasendra 🧡
+    </footer>
   </body>
 </html>
